@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>스톱워치 & 계산기</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>3주차 과제</h1>
+        <div class="tab-buttons">
+          <button id="showStopwatch">스톱워치</button>
+          <button id="showCalculator">계산기</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="stopwatchSection" class="tab-section active">
+          <div class="stopwatch">
+            <div class="display" id="display">00:00</div>
+            <div class="controls">
+              <button id="start">시작</button>
+              <button id="stop">정지</button>
+              <button id="reset">초기화</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="calculatorSection" class="tab-section">
+          <div class="calculator">
+            <div class="calc-display" id="calcDisplay">0</div>
+            <div class="buttons">
+              <button>7</button><button>8</button><button>9</button
+              ><button>/</button> <button>4</button><button>5</button
+              ><button>6</button><button>*</button> <button>1</button
+              ><button>2</button><button>3</button><button>-</button>
+              <button>0</button><button>C</button><button>=</button
+              ><button>+</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
