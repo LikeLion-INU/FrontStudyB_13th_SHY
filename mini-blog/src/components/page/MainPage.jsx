@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import PostList from "../list/PostList";
 import Button from "../ui/Button";
 import { useBlog } from "../../context/BlogContext";
+import { useAuth } from "../../context/AuthContext";
+import axiosInstance from "../../api/axiosInstance";
 
 /**
  * 메인 페이지 컴포넌트
@@ -29,6 +31,44 @@ const Wrapper = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 40px;
+`;
+
+/**
+ * 네비게이션 바를 위한 스타일드 컴포넌트
+ */
+const NavBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eaeaea;
+`;
+
+/**
+ * 로고 영역을 위한 스타일드 컴포넌트
+ */
+const Logo = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  color: #2d6cdf;
+`;
+
+/**
+ * 사용자 정보 영역을 위한 스타일드 컴포넌트
+ */
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+/**
+ * 사용자 이메일 표시를 위한 스타일드 컴포넌트
+ */
+const UserEmail = styled.span`
+  color: #555;
+  font-size: 14px;
 `;
 
 /**
@@ -122,6 +162,8 @@ function MainPage() {
   const navigate = useNavigate();
   // BlogContext에서 포스트 목록과 삭제 함수를 가져옵니다.
   const { posts, deletePost } = useBlog();
+  // AuthContext에서 사용자 정보와 로그아웃 함수를 가져옵니다.
+  const { user, logout } = useAuth();
   // 삭제 모드 상태를 관리합니다.
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   // 확인 모달 표시 여부를 관리합니다.
@@ -179,16 +221,44 @@ function MainPage() {
    * 
    * 선택된 포스트를 삭제하고 관련 상태를 초기화합니다.
    */
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedPost) {
-      // 선택된 포스트 삭제
-      deletePost(selectedPost.id);
-      // 모달 및 삭제 모드 초기화
-      setShowConfirmModal(false);
-      setIsDeleteMode(false);
-      setSelectedPost(null);
-      // 삭제 완료 알림 표시
-      alert("글이 삭제되었습니다.");
+      // 사용자 인증 확인
+      if (!user) {
+        alert('로그인이 필요합니다.');
+        setShowConfirmModal(false);
+        setIsDeleteMode(false);
+        setSelectedPost(null);
+        return;
+      }
+      
+      // 게시글 소유자 검증
+      if (user.id !== selectedPost.userId) {
+        alert('자신이 작성한 글만 삭제할 수 있습니다.');
+        setShowConfirmModal(false);
+        setIsDeleteMode(false);
+        setSelectedPost(null);
+        return;
+      }
+      
+      try {
+        // 서버에 삭제 요청
+        await axiosInstance.delete(`/660/posts/${selectedPost.id}`);
+        
+        // 로컬 상태 업데이트
+        deletePost(selectedPost.id);
+        
+        // 모달 및 삭제 모드 초기화
+        setShowConfirmModal(false);
+        setIsDeleteMode(false);
+        setSelectedPost(null);
+        
+        // 삭제 완료 알림 표시
+        alert("글이 삭제되었습니다.");
+      } catch (error) {
+        console.error('포스트 삭제 중 오류가 발생했습니다:', error);
+        alert('글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -204,10 +274,28 @@ function MainPage() {
     setSelectedPost(null);
   };
 
+  /**
+   * 로그아웃 핸들러
+   * 
+   * 사용자를 로그아웃 처리하고 로그인 페이지로 리다이렉트합니다.
+   */
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <Wrapper>
+      <NavBar>
+        <Logo>미니 블로그</Logo>
+        <UserInfo>
+          <UserEmail>{user?.email}</UserEmail>
+          <Button variant="secondary" onClick={handleLogout}>로그아웃</Button>
+        </UserInfo>
+      </NavBar>
+      
       <Header>
-        <Title>성호영의 개인 블로그</Title>
+        <Title>{user?.email}의 미니 블로그</Title>
       </Header>
       
       <ButtonContainer>

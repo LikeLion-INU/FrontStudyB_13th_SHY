@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import TextInput from "../ui/TextInput";
 import { useBlog } from "../../context/BlogContext";
+import { useAuth } from "../../context/AuthContext";
+import axiosInstance from "../../api/axiosInstance";
 
 /**
  * 포스트 작성 페이지 컴포넌트
@@ -72,6 +74,8 @@ function PostWritePage() {
   const navigate = useNavigate();
   // BlogContext에서 포스트 추가 함수를 가져옵니다.
   const { addPost } = useBlog();
+  // AuthContext에서 사용자 정보를 가져옵니다.
+  const { user } = useAuth();
   // 포스트 제목을 관리합니다.
   const [title, setTitle] = useState("");
   // 포스트 내용을 관리합니다.
@@ -85,7 +89,7 @@ function PostWritePage() {
    * 
    * @param {Event} e - 폼 제출 이벤트 객체
    */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     // 폼 기본 제출 동작 방지
     e.preventDefault();
     
@@ -101,12 +105,36 @@ function PostWritePage() {
       return;
     }
     
-    // 새 포스트 추가
-    const newPost = addPost(title, content);
-    // 성공 메시지 표시
-    alert("글이 작성되었습니다.");
-    // 생성된 포스트의 상세 페이지로 이동
-    navigate(`/post/${newPost.id}`);
+    try {
+      // 사용자 정보 확인
+      if (!user) {
+        alert('로그인이 필요합니다.');
+        navigate('/login');
+        return;
+      }
+      
+      // 서버에 포스트 생성 요청 (userId 포함)
+      await axiosInstance.post('/660/posts', {
+        title,
+        content,
+        userId: user.id,
+        author: user.email,
+        createdAt: new Date().toISOString(),
+        comments: []
+      });
+      
+      // 새 포스트 추가 (로컬 상태 업데이트)
+      const newPost = addPost(title, content);
+      
+      // 성공 메시지 표시
+      alert("글이 작성되었습니다.");
+      
+      // 생성된 포스트의 상세 페이지로 이동
+      navigate(`/post/${newPost.id}`);
+    } catch (error) {
+      console.error("포스트 작성 중 오류가 발생했습니다:", error);
+      alert("글 작성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   /**

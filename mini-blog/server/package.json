@@ -1,0 +1,14 @@
+{
+  "name": "mini-blog-server",
+  "version": "1.0.0",
+  "description": "JSON Server with Auth for Mini Blog Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "json-server": "^0.17.3",
+    "json-server-auth": "^2.1.0"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "users": [
+    {
+      "email": "hbman01@naver.com",
+      "password": "$2a$10$iCT1OdKj3zHaanBepEf4B.3vT9tjNSJ5E5.RgdIHYAU3s2YQJa9oC",
+      "id": 1
+    },
+    {
+      "email": "s41024896@gmail.com",
+      "password": "$2a$10$BJEnl.43CcxFwNQlrTFCbuGSj/ckq8k5.yXn7SV/NcdY/PiFqjgCW",
+      "id": 2
+    }
+  ],
+  "posts": [
+    {
+      "title": "5월 20일 (화) 프론트 엔드 스터디를 위한 예시 입니다.",
+      "content": "5월 20일 (화) 프론트 엔드 스터디를 위한 예시 입니다.",
+      "userId": 1,
+      "author": "hbman01@naver.com",
+      "createdAt": "2025-05-20T05:06:28.805Z",
+      "comments": [
+        {
+          "id": 1747718518542,
+          "content": "그렇군요",
+          "author": "방문자",
+          "createdAt": "2025-05-20T05:21:58.542Z"
+        },
+        {
+          "id": 1747718685369,
+          "content": "그렇군요2",
+          "author": "방문자",
+          "userId": 1,
+          "createdAt": "2025-05-20T05:24:45.369Z"
+        },
+        {
+          "id": 1747718847863,
+          "content": "대단해요",
+          "author": "성호영",
+          "userId": 2,
+          "createdAt": "2025-05-20T05:27:27.863Z"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "title": "오늘의 첫 글",
+      "content": "블로그를 시작합니다! 앞으로 개발하면서 배운 것들을 기록해볼 예정이에요.",
+      "userId": 1,
+      "author": "hbman01@naver.com",
+      "createdAt": "2025-05-20T05:10:39.885Z",
+      "comments": [
+        {
+          "id": 1747718915010,
+          "content": "대단해요\n",
+          "author": "대단해요",
+          "userId": 2,
+          "createdAt": "2025-05-20T05:28:35.010Z"
+        }
+      ],
+      "id": 4
+    },
+    {
+      "title": "React에서 상태 관리하는 법",
+      "content": "useState와 useEffect부터 시작해서, 나중엔 Zustand나 Redux도 써보려고 해요.",
+      "userId": 1,
+      "author": "hbman01@naver.com",
+      "createdAt": "2025-05-20T05:14:46.722Z",
+      "comments": [],
+      "id": 5
+    },
+    {
+      "title": "오늘 배운 HTTP 메서드",
+      "content": "GET은 읽기, POST는 생성, PUT은 수정, DELETE는 삭제! 간단하지만 핵심이에요.",
+      "userId": 2,
+      "author": "s41024896@gmail.com",
+      "createdAt": "2025-05-20T05:21:22.724Z",
+      "comments": [],
+      "id": 6
+    },
+    {
+      "title": "ㅇㅇㅇㅇ",
+      "content": "ㅇㅇㅇㅇㅇ",
+      "userId": 1,
+      "author": "hbman01@naver.com",
+      "createdAt": "2025-05-20T05:30:29.757Z",
+      "comments": [],
+      "id": 7
+    }
+  ]
+}

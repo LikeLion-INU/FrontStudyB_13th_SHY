@@ -1,10 +1,97 @@
-# Getting Started with Create React App
+# 미니 블로그 프로젝트
+
+## 프로젝트 소개
+
+JWT 기반 인증 처리, 권한 분기 처리, axios 인스턴스 설정이 포함된 미니 블로그 프로젝트입니다.
+
+## 주요 기능
+
+- JWT 기반 로그인/회원가입 기능
+- 토큰을 localStorage에 저장하고 axios 요청 시 자동 포함
+- 글 작성자에게만 수정/삭제 버튼 표시 (권한 분기 처리)
+- 로그인 상태 전역 관리 (Context API 사용)
+
+## 프로젝트 구조
+
+```
+mini-blog/
+├── client/ (React 앱)
+│   ├── src/
+│   │   ├── api/axiosInstance.js           // axios 인스턴스 설정
+│   │   ├── context/
+│   │   │   ├── AuthContext.js             // 인증 상태 관리
+│   │   │   └── BlogContext.js             // 블로그 상태 관리
+│   │   ├── components/
+│   │   │   ├── page/
+│   │   │   │   ├── auth/
+│   │   │   │   │   ├── LoginPage.jsx      // 로그인 페이지
+│   │   │   │   │   └── SignupPage.jsx     // 회원가입 페이지
+│   │   │   │   ├── MainPage.jsx           // 메인 페이지
+│   │   │   │   ├── PostWritePage.jsx      // 글 작성 페이지
+│   │   │   │   ├── PostEditPage.jsx       // 글 수정 페이지
+│   │   │   │   └── PostViewPage.jsx       // 글 상세 페이지
+│   │   │   ├── list/
+│   │   │   │   ├── PostList.jsx           // 포스트 목록 컴포넌트
+│   │   │   │   └── PostItem.jsx           // 개별 포스트 컴포넌트
+│   │   │   └── ui/
+│   │   │       ├── Button.jsx             // 버튼 컴포넌트
+│   │   │       └── TextInput.jsx          // 입력 필드 컴포넌트
+│   │   └── App.js                         // 라우팅 설정
+└── server/
+    ├── db.json                           // 데이터베이스 파일
+    └── server.js                         // json-server-auth 설정
+```
+
+# 시작하기
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## 설치 및 실행 방법
 
-In the project directory, you can run:
+### 클라이언트 설치
+
+```bash
+npm install
+```
+
+### 서버 설치
+
+```bash
+cd server
+npm install
+```
+
+### 서버 실행
+
+```bash
+cd server
+npm start
+```
+
+서버는 http://localhost:8000 에서 실행됩니다.
+
+### 클라이언트 실행
+
+```bash
+npm start
+```
+
+클라이언트는 http://localhost:3000 에서 실행됩니다.
+
+## 주요 API 엔드포인트
+
+| 기능   | Method | Endpoint        | 설명                |
+| ---- | ------ | --------------- | ----------------- |
+| 회원가입 | POST   | /register       | 이메일, 비밀번호 전달      |
+| 로그인  | POST   | /login          | JWT 토큰 + 유저 정보 응답 |
+| 글 목록 | GET    | /660/posts      | 로그인 필요            |
+| 글 작성 | POST   | /660/posts      | 토큰 + userId 필요    |
+| 글 수정 | PUT    | /660/posts/:id | 본인만 가능            |
+| 글 삭제 | DELETE | /660/posts/:id | 본인만 가능            |
+
+## 사용 가능한 스크립트
+
+프로젝트 디렉토리에서 다음 명령어를 실행할 수 있습니다:
 
 ### `npm start`
 

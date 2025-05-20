@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Button from "../ui/Button";
 import TextInput from "../ui/TextInput";
 import { useBlog } from "../../context/BlogContext";
+import { useAuth } from "../../context/AuthContext";
+import axiosInstance from "../../api/axiosInstance";
 
 /**
  * 포스트 상세 보기 페이지 컴포넌트
@@ -204,6 +206,16 @@ const EmptyComments = styled.p`
 `;
 
 /**
+ * 포스트 액션 버튼 영역을 위한 스타일드 컴포넌트
+ */
+const PostActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+/**
  * 포스트 상세 보기 페이지 컴포넌트 함수
  * 
  * 개별 포스트의 상세 내용과 댓글 기능을 관리합니다.
@@ -214,8 +226,10 @@ function PostViewPage() {
   const { postId } = useParams();
   // 페이지 네비게이션을 위한 후크
   const navigate = useNavigate();
-  // BlogContext에서 포스트 조회, 댓글 추가, 댓글 삭제 함수를 가져옵니다.
-  const { getPost, addComment, deleteComment } = useBlog();
+  // BlogContext에서 포스트 조회, 댓글 추가 및 삭제 함수를 가져옵니다.
+  const { getPost, addComment, deleteComment, deletePost } = useBlog();
+  // AuthContext에서 사용자 정보를 가져옵니다.
+  const { user } = useAuth();
   // 현재 포스트 정보를 관리합니다.
   const [post, setPost] = useState(null);
   // 댓글 내용을 관리합니다.
@@ -261,8 +275,9 @@ function PostViewPage() {
     
     // 작성자가 비어있으면 기본값 '방문자'로 설정
     const author = commentAuthor.trim() || "방문자";
-    // 새 댓글 추가
-    addComment(parseInt(postId), commentContent, author);
+    // 새 댓글 추가 (로그인한 경우 사용자 ID 포함)
+    const userId = user ? user.id : null;
+    addComment(parseInt(postId), commentContent, author, userId);
     // 입력 필드 초기화
     setCommentContent("");
     setCommentAuthor("");
@@ -301,6 +316,50 @@ function PostViewPage() {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   };
 
+  /**
+   * 포스트 수정 버튼 클릭 핸들러
+   * 
+   * 포스트 수정 페이지로 이동합니다.
+   */
+  const handleEditPost = () => {
+    navigate(`/post-edit/${postId}`);
+  };
+
+  /**
+   * 포스트 삭제 버튼 클릭 핸들러
+   * 
+   * 삭제 확인 후 포스트를 삭제하고 메인 페이지로 이동합니다.
+   */
+  const handleDeletePost = async () => {
+    // 사용자 인증 및 게시글 소유자 검증
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    
+    // 게시글 소유자 검증
+    if (user.id !== post.userId) {
+      alert('자신이 작성한 글만 삭제할 수 있습니다.');
+      return;
+    }
+    
+    if (window.confirm('정말로 이 글을 삭제하시겠습니까?')) {
+      try {
+        // 서버에 삭제 요청
+        await axiosInstance.delete(`/660/posts/${postId}`);
+        
+        // 로컬 상태 업데이트
+        deletePost(parseInt(postId));
+        
+        alert('글이 삭제되었습니다.');
+        navigate('/');
+      } catch (error) {
+        console.error('포스트 삭제 중 오류가 발생했습니다:', error);
+        alert('글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    }
+  };
+
   // 포스트 데이터가 아직 로드되지 않았으면 아무것도 렌더링하지 않습니다.
   if (!post) {
     return null;
@@ -324,6 +383,14 @@ function PostViewPage() {
         </PostHeader>
         
         <PostContent>{post.content}</PostContent>
+        
+        {/* 포스트 소유자인 경우에만 수정/삭제 버튼 표시 */}
+        {user && post.userId && user.id === post.userId && (
+          <PostActions>
+            <Button variant="secondary" onClick={handleEditPost}>수정</Button>
+            <Button variant="danger" onClick={handleDeletePost}>삭제</Button>
+          </PostActions>
+        )}
       </PostContainer>
       
       <CommentsContainer>
@@ -361,9 +428,12 @@ function PostViewPage() {
                   <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
                 </CommentHeader>
                 <CommentContent>{comment.content}</CommentContent>
-                <DeleteButton onClick={() => handleCommentDelete(comment.id)}>
-                  삭제
-                </DeleteButton>
+                {/* 댓글 작성자인 경우에만 삭제 버튼 표시 */}
+                {(user && comment.userId && parseInt(user.id) === parseInt(comment.userId)) && (
+                  <DeleteButton onClick={() => handleCommentDelete(comment.id)}>
+                    삭제
+                  </DeleteButton>
+                )}
               </CommentItem>
             ))
           )}

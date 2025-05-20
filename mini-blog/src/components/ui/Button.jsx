@@ -22,6 +22,9 @@ const ButtonWrapper = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   
+  /* fullWidth 속성에 따른 너비 설정 */
+  width: ${props => props.$fullWidth ? '100%' : 'auto'};
+  
   /* 변형에 따른 스타일 적용 */
   ${(props) => {
     if (props.$variant === "primary") {
@@ -77,9 +80,13 @@ const ButtonWrapper = styled.button`
  * @param {Object} rest - 버튼에 전달될 추가 속성들 (onClick, type, disabled 등)
  * @returns {JSX.Element} 스타일링된 버튼 컴포넌트
  */
-function Button({ children, variant = "primary", ...rest }) {
+function Button({ children, variant = "primary", fullWidth = false, ...rest }) {
   return (
-    <ButtonWrapper $variant={variant} {...rest}>
+    <ButtonWrapper 
+      $variant={variant} 
+      $fullWidth={fullWidth} 
+      {...rest}
+    >
       {children}
     </ButtonWrapper>
   );

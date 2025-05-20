@@ -52,12 +52,28 @@ const PostTitle = styled.h3`
 `;
 
 /**
- * 포스트 작성자 정보를 위한 스타일드 컴포넌트
+ * 포스트 메타 정보(작성자, 날짜)를 위한 스타일드 컴포넌트
  */
-const PostAuthor = styled.p`
+const PostMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
   color: #666;
   margin: 0 0 8px 0;
+`;
+
+/**
+ * 포스트 작성자 정보를 위한 스타일드 컴포넌트
+ */
+const PostAuthor = styled.span`
+  font-weight: 500;
+`;
+
+/**
+ * 포스트 작성일 정보를 위한 스타일드 컴포넌트
+ */
+const PostDate = styled.span`
+  color: #888;
 `;
 
 /**
@@ -85,6 +101,8 @@ const PostContent = styled.p`
  * @returns {JSX.Element} 포스트 아이템 UI를 렌더링합니다.
  */
 function PostItem({ post, isDeleteMode = false, onClick }) {
+  // useAuth는 필요하지 않으므로 제거
+  // const { user, isOwner } = useAuth();
   /**
    * 포스트 클릭 핸들러 함수
    * 
@@ -96,11 +114,28 @@ function PostItem({ post, isDeleteMode = false, onClick }) {
       onClick(post);
     }
   };
+  
+  /**
+   * 날짜 포맷팅 함수
+   * 
+   * ISO 문자열 날짜를 YYYY-MM-DD 형식으로 변환합니다.
+   * 
+   * @param {string} dateString - ISO 형식의 날짜 문자열
+   * @returns {string} 포맷팅된 날짜 문자열
+   */
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
 
   return (
     <PostItemWrapper $isDeleteMode={isDeleteMode} onClick={handleClick}>
       <PostTitle>{post.title}</PostTitle>
-      <PostAuthor>작성자: {post.author}</PostAuthor>
+      <PostMeta>
+        <PostAuthor>{post.author || '익명'}</PostAuthor>
+        <PostDate>{formatDate(post.createdAt)}</PostDate>
+      </PostMeta>
       <PostContent>{post.content}</PostContent>
     </PostItemWrapper>
   );
