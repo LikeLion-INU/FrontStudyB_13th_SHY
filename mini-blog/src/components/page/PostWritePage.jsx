@@ -114,7 +114,7 @@ function PostWritePage() {
       }
       
       // 서버에 포스트 생성 요청 (userId 포함)
-      await axiosInstance.post('/660/posts', {
+      const response = await axiosInstance.post('/660/posts', {
         title,
         content,
         userId: user.id,
@@ -123,14 +123,17 @@ function PostWritePage() {
         comments: []
       });
       
-      // 새 포스트 추가 (로컬 상태 업데이트)
-      const newPost = addPost(title, content);
+      // 서버 응답에서 새 포스트 ID 가져오기
+      const newPostId = response.data.id;
+      
+      // 블로그 컨텍스트 상태 업데이트
+      addPost(title, content);
       
       // 성공 메시지 표시
       alert("글이 작성되었습니다.");
       
-      // 생성된 포스트의 상세 페이지로 이동
-      navigate(`/post/${newPost.id}`);
+      // 생성된 포스트의 상세 페이지로 이동 (서버 응답의 ID 사용)
+      navigate(`/post/${newPostId}`);
     } catch (error) {
       console.error("포스트 작성 중 오류가 발생했습니다:", error);
       alert("글 작성 중 오류가 발생했습니다. 다시 시도해주세요.");

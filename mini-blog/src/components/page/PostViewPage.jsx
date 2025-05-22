@@ -244,16 +244,26 @@ function PostViewPage() {
    * 포스트가 없는 경우 알림을 표시하고 메인 페이지로 이동합니다.
    */
   useEffect(() => {
-    // 해당 ID의 포스트를 찾습니다.
-    const foundPost = getPost(postId);
-    if (foundPost) {
-      // 포스트를 찾았으면 상태로 저장합니다.
-      setPost(foundPost);
-    } else {
-      // 포스트를 찾지 못하면 알림을 표시하고 메인 페이지로 이동합니다.
-      alert("글을 찾을 수 없습니다.");
-      navigate("/");
-    }
+    // 서버에서 직접 포스트 정보를 가져옵니다.
+    const fetchPost = async () => {
+      try {
+        // 서버에서 해당 ID의 포스트를 가져옵니다.
+        const response = await axiosInstance.get(`/660/posts/${postId}`);
+        setPost(response.data);
+      } catch (error) {
+        console.error('포스트 조회 중 오류가 발생했습니다:', error);
+        // API 오류가 발생한 경우, 로컬 상태에서 포스트를 찾아봅니다.
+        const foundPost = getPost(postId);
+        if (foundPost) {
+          setPost(foundPost);
+        } else {
+          alert('글을 찾을 수 없습니다.');
+          navigate('/');
+        }
+      }
+    };
+    
+    fetchPost();
   }, [postId, getPost, navigate]);
 
   /**
@@ -263,7 +273,7 @@ function PostViewPage() {
    * 
    * @param {Event} e - 폼 제출 이벤트 객체
    */
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     // 폼 기본 제출 동작 방지
     e.preventDefault();
     
@@ -277,13 +287,22 @@ function PostViewPage() {
     const author = commentAuthor.trim() || "방문자";
     // 새 댓글 추가 (로그인한 경우 사용자 ID 포함)
     const userId = user ? user.id : null;
-    addComment(parseInt(postId), commentContent, author, userId);
-    // 입력 필드 초기화
-    setCommentContent("");
-    setCommentAuthor("");
     
-    // 새로운 댓글이 추가된 포스트 정보로 상태 업데이트
-    setPost(getPost(postId));
+    try {
+      // 댓글 추가 후 서버에서 최신 데이터 가져오기
+      await addComment(parseInt(postId), commentContent, author, userId);
+      
+      // 입력 필드 초기화
+      setCommentContent("");
+      setCommentAuthor("");
+      
+      // 서버에서 최신 포스트 정보 가져오기
+      const response = await axiosInstance.get(`/660/posts/${postId}`);
+      setPost(response.data);
+    } catch (error) {
+      console.error('댓글 추가 중 오류가 발생했습니다:', error);
+      alert('댓글 추가 중 오류가 발생했습니다.');
+    }
   };
 
   /**
@@ -293,13 +312,20 @@ function PostViewPage() {
    * 
    * @param {number} commentId - 삭제할 댓글의 ID
    */
-  const handleCommentDelete = (commentId) => {
+  const handleCommentDelete = async (commentId) => {
     // 삭제 확인 대화상자 표시
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
-      // 댓글 삭제 실행
-      deleteComment(parseInt(postId), commentId);
-      // 댓글이 삭제된 포스트 정보로 상태 업데이트
-      setPost(getPost(postId));
+      try {
+        // 댓글 삭제 실행
+        await deleteComment(parseInt(postId), commentId);
+        
+        // 서버에서 최신 포스트 정보 가져오기
+        const response = await axiosInstance.get(`/660/posts/${postId}`);
+        setPost(response.data);
+      } catch (error) {
+        console.error('댓글 삭제 중 오류가 발생했습니다:', error);
+        alert('댓글 삭제 중 오류가 발생했습니다.');
+      }
     }
   };
 

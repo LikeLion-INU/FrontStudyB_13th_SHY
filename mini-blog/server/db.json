@@ -9,6 +9,11 @@
       "email": "s41024896@gmail.com",
       "password": "$2a$10$BJEnl.43CcxFwNQlrTFCbuGSj/ckq8k5.yXn7SV/NcdY/PiFqjgCW",
       "id": 2
+    },
+    {
+      "email": "1234@gmail.com",
+      "password": "$2a$10$TM3wD/VrDbzEPPl8hwjPxOHAh6M4JrlT9N5HbzaF1lmE6G2OBf.Fq",
+      "id": 3
     }
   ],
   "posts": [
@@ -85,6 +90,15 @@
       "createdAt": "2025-05-20T05:30:29.757Z",
       "comments": [],
       "id": 7
+    },
+    {
+      "title": "33",
+      "content": "3333",
+      "userId": 1,
+      "author": "hbman01@naver.com",
+      "createdAt": "2025-05-20T07:13:51.723Z",
+      "comments": [],
+      "id": 8
     }
   ]
 }
